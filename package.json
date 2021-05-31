@@ -1,0 +1,25 @@
+{
+  "name": "parse-dbtool",
+  "version": "1.0.0",
+  "main": "parse-dbtool.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Fakhrullah Padzil",
+  "license": "ISC",
+  "description": "Command line to create database migration and seeder for ParseServer (ParsePlatform).",
+  "bin": "parse-dbtool.js",
+  "dependencies": {
+    "date-fns": "^2.21.3",
+    "fast-glob": "^3.2.5",
+    "parse": "^3.2.0",
+    "parse-server": "github:parse-community/parse-server#master",
+    "yargs": "^17.0.1"
+  },
+  "devDependencies": {
+    "eslint": "^7.27.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.23.3"
+  }
+}
