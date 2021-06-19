@@ -2,7 +2,7 @@
  *
  * @param {Parse} Parse
  */
-exports.up = (Parse) => {
+exports.up = async (Parse) => {
   // TODO: set className here
   const className = '';
   const schema = new Parse.Schema(className);
@@ -18,7 +18,7 @@ exports.up = (Parse) => {
  *
  * @param {Parse} Parse
  */
-exports.down = (Parse) => {
+exports.down = async (Parse) => {
   // TODO: set className here
   const className = '';
   const schema = new Parse.Schema(className);
