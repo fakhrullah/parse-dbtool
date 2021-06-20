@@ -6,6 +6,7 @@ const init = require('./init');
 const migrationMake = require('./migration-make');
 const migrationUp = require('./migration-up');
 const migrationDown = require('./migration-down');
+const migrationStatus = require('./migration-status');
 const seedRun = require('./seed-run');
 const pkg = require('./package.json');
 
@@ -13,8 +14,9 @@ const pkg = require('./package.json');
 yargs(hideBin(process.argv))
   .scriptName('parse-dbtool')
   .command(init)
-  .command(migrationMake)
   .command(migrationUp)
+  .command(migrationMake)
+  .command(migrationStatus)
   .command(migrationDown)
   .command(seedRun)
   .demandCommand(1)
