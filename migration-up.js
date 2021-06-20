@@ -4,6 +4,7 @@ const chalk = require('chalk');
 const fastGlob = require('fast-glob');
 // eslint-disable-next-line import/no-extraneous-dependencies
 const Parse = require('parse/node');
+const MigrationError = require('./libs/MigrationError');
 const { migrationDirectory, buildInfo } = require('./libs/system');
 const {
   cerror, csuccess, cright, cloading,
@@ -49,8 +50,26 @@ Parse.serverURL = SERVER_URL;
 /**
  * @param {String[]} migrationsDone
  */
-const recordMigration = (migrationsDone) => {
-  console.log(`Record migration \n${migrationsDone.join('\n')}`);
+const recordMigration = async (migrationsDone) => {
+  const migrations = migrationsDone.map((migrationDone) => {
+    const MigrationObject = Parse.Object.extend('Migration');
+    const migrationObject = new MigrationObject();
+    migrationObject.set({
+      name: migrationDone,
+    });
+    return migrationObject;
+  });
+
+  return Parse.Object.saveAll(migrations, { useMasterKey: true });
+};
+
+/**
+ * @returns {Promise<string[]>}
+ */
+const readMigration = async () => {
+  const migrationQuery = new Parse.Query('Migration');
+  const migrations = await migrationQuery.findAll({ useMasterKey: true });
+  return migrations.map((migration) => migration.get('name'));
 };
 
 /**
@@ -79,21 +98,25 @@ async function migrationUp(isSeedRun) {
     (a, b) => a.toLowerCase().localeCompare(b.toLocaleLowerCase()),
   );
 
-  // TODO: get ran migrations from database
-  // TODO: filter to get non-run migration files only
+  const alreadyRunMigrations = await readMigration();
 
-  // console.log('Run all files inside databases/migrations');
+  const migrationFilesToRun = sortedFiles.filter(
+    (filepath) => !alreadyRunMigrations.includes(path.basename(filepath)),
+  );
+
+  if (migrationFilesToRun.length === 0) {
+    throw new MigrationError('No migrations were executed, database schema was already up to date.');
+  }
+
   // run up() of all files
   // eslint-disable-next-line no-restricted-syntax
-  for (const filepath of sortedFiles) {
+  for (const filepath of migrationFilesToRun) {
     // eslint-disable-next-line import/no-dynamic-require, global-require
     const migrationScript = require(filepath);
     const migrationFilename = path.basename(filepath);
 
     console.log(cloading(`Migrating ${migrationFilename}`));
 
-    // eslint-disable-next-line no-await-in-loop
-    // await Promise.resolve(migrationScript.up(Parse));
     // eslint-disable-next-line no-await-in-loop
     const migration = await migrationScript.up(Parse);
 
@@ -103,6 +126,7 @@ async function migrationUp(isSeedRun) {
     } else {
       // throw new Error(migration);
       isMigrationSuccess = false;
+      // Break the loop when error happen
       break;
     }
 
@@ -114,11 +138,11 @@ async function migrationUp(isSeedRun) {
   }
 
   // Record ran migration files
-  recordMigration(migrationsDone);
+  await recordMigration(migrationsDone);
 
   //
   if (!isMigrationSuccess) {
-    throw new Error('hey');
+    throw new Error('Unexpected error. What is it? It is unexpected. No one knows.');
   }
 
   // Is all migrations is ran?
@@ -155,7 +179,13 @@ exports.handler = (args) => {
     .then(() => {
       console.log(`\n${csuccess('Successfully run migrations.\n')}`);
     })
-    .catch((err) => console.log(`\n${cerror(`${err.message}\n`)}`));
-
-  // throw new Error('Not implement yet!');
+    .catch((err) => {
+      if (err instanceof MigrationError) {
+        console.log(`${err.message}\n`);
+      } else {
+        console.log(`\n${cerror(`${err.message}\n`)}`);
+      }
+      // console.log('\n---\n');
+      // throw err;
+    });
 };
