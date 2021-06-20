@@ -97,9 +97,81 @@ npx parse-dbtool migration:make prevent_add_field_to_pet_schema
 
 ## Migration file structure
 
+After migration file created. You must write your migration code.
+Refer [Parse JS SDK official documentation on Schema section](https://docs.parseplatform.org/js/guide/#schema)
+to know how to write the migration code.
 
+A migration file contains 2 functions, `up` and `down`. The `up` function is used to run the migration you want,
+while the `down` function should reverse what happen in `up` function.
+
+For example, the following migration will create a `Pet` class with fields 
+`name`, `photoUrl`, `objectId`, `createdAt`, `updatedAt` and `ACL`  in parse-server.
+
+Some fields such as `objectId`, `createdAt`, `updatedAt`  and `ACL` are automatically created by parse-server.
+
+```javascript
+exports.up = async (Parse) => {
+  const className = 'Pet';
+  const schema = new Parse.Schema(className);
+
+  schema
+    .addString('name')
+    .addString('photoUrl');
+
+  return schema.save();
+};
+
+exports.down = async (Parse) => {
+  const className = 'Pet';
+  const schema = new Parse.Schema(className);
+
+  return schema.purge().then(() => schema.delete());
+};
+
+```
+
+Both `up` & `down` must be written by you. Those are not automatically generated.
+Some developers ignore to write `down` function to revert `up` function. When you do not write
+correct `down` function that revert what is run on `up` function, running `migration:undo` will
+not working as expected.
+
+For example, your `up` function is creating new Pet class but `down` is not doing anything.
+
+```javascript
+exports.up = async (Parse) => {
+  const className = 'Pet';
+  const schema = new Parse.Schema(className);
+
+  schema
+    .addString('name')
+    .addString('photoUrl');
+
+  return schema.save();
+};
+
+exports.down = async (Parse) => {
+  return ;
+};
+```
+
+When running `migration:undo`, nothing will happen. Your Pet class created in migration before, will
+stay in your database.
+
+> **You are responsible to write the `down` function that correctly revert written `up` function**
 
 ## Running migration
+
+Once you have write your migration code, you can run it. The `parse-dbtool` will run all your outstanding migrations.
+
+```
+npx parse-dbtool migrate
+```
+
+You can see your migration status:
+
+```
+npx parse-dbtool migration:status
+```
 
 ## Undo migration
 
