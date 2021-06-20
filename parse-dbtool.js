@@ -7,6 +7,7 @@ const migrationMake = require('./migration-make');
 const migrationUp = require('./migration-up');
 const migrationDown = require('./migration-down');
 const seedRun = require('./seed-run');
+const pkg = require('./package.json');
 
 // eslint-disable-next-line no-unused-expressions
 yargs(hideBin(process.argv))
@@ -20,7 +21,7 @@ yargs(hideBin(process.argv))
   .strict()
   // Show help when failed and when no command
   .showHelpOnFail(true)
-  .version('1.0.0')
+  .version(pkg.version)
   .help('h')
   .alias('h', 'help')
   .argv;
