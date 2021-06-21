@@ -26,12 +26,28 @@ exports.getAllMigrations = async (Parse) => {
 
   return migrationFiles
     .sort((a, b) => a.toLowerCase().localeCompare(b.toLocaleLowerCase()))
-    .map((migrationFile) => path.basename(migrationFile))
-    .map((migrationName) => {
-      if (allRunMigrations.includes(migrationName)) return { status: 'up', name: migrationName };
-
-      return { status: 'down', name: migrationName };
+    .map((migrationFile) => {
+      const migrationName = path.basename(migrationFile);
+      if (allRunMigrations.includes(migrationName)) return { status: 'up', name: migrationName, fullpath: migrationFile };
+      return { status: 'down', name: migrationName, fullpath: migrationFile };
     });
+};
+
+/**
+ *
+ * @param {Parse} Parse
+ * @param {MigrationDetail[]} migrations
+ */
+exports.removeMigrations = async (Parse, migrations) => {
+  const migrationObjects = await Promise.all(migrations.map(async (migration) => {
+    const migrationQuery = new Parse.Query('Migration');
+    migrationQuery.equalTo('name', migration.name);
+
+    const migrationObject = await migrationQuery.first({ useMasterKey: true });
+    return migrationObject;
+  }));
+
+  return Parse.Object.destroyAll(migrationObjects, { useMasterKey: true });
 };
 
 exports.saveAllMigrations = () => {
@@ -43,4 +59,5 @@ exports.saveAllMigrations = () => {
  *
  * @property {('up'|'down')} status
  * @property {string} name
+ * @property {string} fullpath
  */
