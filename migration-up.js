@@ -16,7 +16,7 @@ const {
 
 exports.command = 'migrate';
 
-exports.aliases = ['migration:up', 'migration:run'];
+// exports.aliases = ['migration:up', 'migration:run'];
 
 exports.describe = 'Run migrations.';
 
