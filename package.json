@@ -9,7 +9,9 @@
   "author": "Fakhrullah Padzil",
   "license": "ISC",
   "description": "Command line to create database migration and seeder for ParseServer (ParsePlatform).",
-  "bin": "parse-dbtool.js",
+  "bin": {
+    "parse-dbtool": "parse-dbtool.js"
+  },
   "dependencies": {
     "chalk": "^4.1.1",
     "date-fns": "^2.21.3",
