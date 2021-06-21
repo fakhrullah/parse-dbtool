@@ -42,9 +42,9 @@ const cdown = (text) => `${chalk.whiteBright.bgRed(' ‒ ')} down ${text}`;
 /**
  *
  * @param {string} text
- * @returns {bool}
+ * @returns {boolean}
  */
-const isStartWithKeywordCreate = (text) => text.startsWith('create') !== -1;
+const isStartWithKeywordCreate = (text) => text.startsWith('create');
 
 /**
  *
