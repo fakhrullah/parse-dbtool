@@ -3,7 +3,7 @@
   "version": "0.1.5",
   "main": "parse-dbtool.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "keywords": [],
   "author": "Fakhrullah Padzil",
@@ -23,8 +23,10 @@
     "yargs": "^17.0.1"
   },
   "devDependencies": {
+    "@types/jest": "^26.0.23",
     "eslint": "^7.27.0",
     "eslint-config-airbnb-base": "^14.2.1",
-    "eslint-plugin-import": "^2.23.3"
+    "eslint-plugin-import": "^2.23.3",
+    "jest": "^27.0.4"
   }
 }
