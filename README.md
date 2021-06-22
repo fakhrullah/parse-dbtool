@@ -9,8 +9,10 @@ to help you create migrations and seeders for Parse Server.
 ## Introduction
 
 Migrations are like Git for your database. Use **migrations** to keep tracks of database changes.
+
 Have you ever had an error and the problem is caused by latest software version required new field or
 new collections (table)?
+
 Migrations solved it by keeping everyone has same database structure.
 
 This `parse-dbtool` is a command line tool that can help you to create migrations for any instance of 
@@ -21,13 +23,23 @@ The migration files is using [Parse.Schema](https://docs.parseplatform.org/js/gu
 Parse server by default is not strict. You can send schema with new field or new collection, parse-server will
 add it without warning.
 
-But certain system is much strict, they cannot allow anyone to edit database. For that, parse-server
-has option `allowClientClassCreation` that can be set to false to prevent anyone to create new collection.
+But certain system is needed to be strict, they cannot allow anyone to edit database.
+For that, parse-server has option `allowClientClassCreation` that can be set to false to prevent anyone to create new collection.
 Every class in parse-server has Class Level Protection (CLP) has `addField` option that when set to false,
 will prevent anyone to add new field.
 
-Migrations can help all developers on the same page of the database structure. Having strict parse-server
-is also good for maintenance and security.
+Migrations can help all developers on the same page of the database structure.
+Having strict parse-server is also good for maintenance and security.
+
+## Installation
+
+```
+npm install parse-dbtool
+```
+
+```
+npx parse-dbtool --help
+```
 
 ## Setup folders structure so that you can start using `parse-dbtool`
 
@@ -45,10 +57,12 @@ This will create following folders:
 ## Connecting to parse-server
 
 The `parse-dbtool` is a standalone software. You can create a new repo just to store only migrations and seeders.
-But it is **HARDLY RECOMMEND** that you use this inside your parse-sever source code.
+But it is **HIGHLY RECOMMEND**, that you use this inside your parse-sever source code.
 
-Let said, you already have migration files and you want to run the migration. On which parse-server should
-it run? So, you need to tell `parse-dbtool` the parse-server: `APPLICATION_ID`, `SERVER_URL` and `MASTER_KEY`.
+Let said, you already have migration files and you want to run the migration.
+On which parse-server should it run?
+
+So, you need to tell `parse-dbtool` the parse-server: `APPLICATION_ID`, `SERVER_URL` and `MASTER_KEY`.
 
 How? Use those as environment.
 
@@ -56,10 +70,9 @@ How? Use those as environment.
 APPLICATION_ID=<parse-server-appId> SERVER_URL=<parse-server-serverURL> MASTER_KEY=<parse-server-masterKey> npx parse-dbtool migrate
 ```
 
-We are **HIGHLY RECOMMEND** you, to use `.env` file as suggested in The Twelve-Factor App (Rule no. 3).
-By default, `parse-dbtool` will read `.env` to get environment data.
+To make it easier, you should use `.env` file. The `parse-dbtool` will read `.env` to get environment data.
 
-If you are following our recommendation, to store `parse-dbtool` generated files inside your parse-server source code,
+If you store `parse-dbtool` generated files inside your parse-server source code,
 running `parse-dbtool` will always use the same configuration as your parse-server environment.
 
 ```
@@ -82,18 +95,11 @@ This will create a migration file named `XXXXXXXXXXXXXX-create_pet.js`.
 Then, you have to modify the migration file todo what you want.
 
 The `parse-dbtool` will created pre-fill migration file. When you start with keyword `create`, the migration file
-will be pre-fill with Parse.Schema function to create new schema.
+will be pre-fill with template to create new schema.
 
-Migration file use Parse.Schema to create or modify your parse-server data. 
-So, refer [Parse JS SDK official documentation & API](https://docs.parseplatform.org/js/guide/#schema)
+Migration file use `Parse.Schema` to create or modify your parse-server data. 
+So, refer [Parse JS SDK official documentation](https://docs.parseplatform.org/js/guide/#schema)
 to know how to write migration file content.
-
-For example, to modify already created Parse Object:
-
-```
-npx parse-dbtool migration:make add_firstname_lastname_field_to_user_schema
-npx parse-dbtool migration:make prevent_add_field_to_pet_schema
-```
 
 ## Migration file structure
 
@@ -101,7 +107,9 @@ After migration file created. You must write your migration code.
 Refer [Parse JS SDK official documentation on Schema section](https://docs.parseplatform.org/js/guide/#schema)
 to know how to write the migration code.
 
-A migration file contains 2 functions, `up` and `down`. The `up` function is used to run the migration you want,
+A migration file contains 2 functions, `up` and `down`. 
+
+The `up` function is used to run the migration you want,
 while the `down` function should reverse what happen in `up` function.
 
 For example, the following migration will create a `Pet` class with fields 
@@ -131,9 +139,9 @@ exports.down = async (Parse) => {
 ```
 
 Both `up` & `down` must be written by you. Those are not automatically generated.
-Some developers ignore to write `down` function to revert `up` function. When you do not write
-correct `down` function that revert what is run on `up` function, running `migration:undo` will
-not working as expected.
+
+If you do not write correct `down` function that revert what is run on `up` function, 
+running `migration:undo` will not working as expected.
 
 For example, your `up` function is creating new Pet class but `down` is not doing anything.
 
@@ -175,12 +183,27 @@ npx parse-dbtool migration:status
 
 ## Undo migration
 
+```
+npx parse-dbtool migration:undo
+```
+
 ## Seeder
 
 what is seeder
 
 ## Generating seeder
 
+```
+npx parse-dbtool seed:make
+```
+
 ## Seeder file structure
 
 ## Running seeder
+
+```
+npx parse-dbtool seed
+```
+
+## Contribution
+
