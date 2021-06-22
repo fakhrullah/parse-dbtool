@@ -1,4 +1,3 @@
-// @ts-check
 const FastGlob = require('fast-glob');
 const path = require('path');
 const { migrationDirectory } = require('./system');
@@ -50,8 +49,21 @@ exports.removeMigrations = async (Parse, migrations) => {
   return Parse.Object.destroyAll(migrationObjects, { useMasterKey: true });
 };
 
-exports.saveAllMigrations = () => {
+/**
+ *
+ * @param {Parse} Parse
+ * @param {MigrationDetail[]} migrations
+ */
+exports.saveAllMigrations = (Parse, migrations) => {
+  const Migration = Parse.Object.extend('Migration');
 
+  const migrationsToSave = migrations.map((migration) => {
+    const migrationObject = new Migration();
+    migrationObject.set('name', migration.name);
+    return migrationObject;
+  });
+
+  return Parse.Object.saveAll(migrationsToSave, { useMasterKey: true });
 };
 
 /**
