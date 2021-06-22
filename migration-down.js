@@ -24,6 +24,10 @@ exports.builder = (args) => args
   });
 
 /**
+ * @typedef {import('./libs/migration-model').MigrationDetail} MigrationDetail}
+ */
+
+/**
  * Undo migration
  *
  * @returns {Promise<MigrationDetail[]>} List of undid migrations. Migrations that finish undo.
