@@ -11,7 +11,7 @@ exports.command = 'init';
 
 exports.describe = 'Initialize directory structures';
 
-exports.builder = {};
+// exports.builder = {};
 
 exports.handler = (args) => {
   console.log(`\n${buildInfo}\n`);

@@ -6,7 +6,7 @@ exports.aliases = ['seed-run'];
 
 exports.describe = 'Seed data';
 
-exports.builder = {};
+// exports.builder = {};
 
 exports.handler = (args) => {
   console.log('Migration up');
