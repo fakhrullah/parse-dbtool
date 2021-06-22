@@ -1,3 +1,4 @@
+const { format: dateFormat } = require('date-fns');
 const chalk = require('chalk');
 const { default: dedent } = require('ts-dedent');
 
@@ -68,6 +69,19 @@ const isRequiredEnvironmentAvailable = async (SERVER_URL, APPLICATION_ID, MASTER
   return true;
 };
 
+/**
+ *
+ * @param {Date} datetime
+ * @param {String} name
+ * @returns {string}
+ */
+const namingFile = (datetime, name) => {
+  const formattedDatetime = dateFormat(datetime, 'yyyyMMddHHmmss');
+  const formattedName = name.trim().toLocaleLowerCase().replace(/[^a-zA-Z0-9]/gi, '_');
+  const filename = `${formattedDatetime}-${formattedName}.js`;
+  return filename;
+};
+
 module.exports = {
   csuccess,
   cerror,
@@ -77,4 +91,5 @@ module.exports = {
   cdown,
   isStartWithKeywordCreate,
   isRequiredEnvironmentAvailable,
+  namingFile,
 };
