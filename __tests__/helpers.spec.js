@@ -15,3 +15,11 @@ test('should return true when APPLICATION_ID, MASTER_KEY, SERVER_URL passed', as
     'masterKey',
   )).toBe(true);
 });
+
+test('should throw when any of APPLICATION_ID, MASTER_KEY, SERVER_URL is empty', async () => {
+  await expect(isRequiredEnvironmentAvailable(
+    '',
+    'fawefwefd',
+    'faewfew',
+  )).rejects.toThrow(/environment is required/);
+});
