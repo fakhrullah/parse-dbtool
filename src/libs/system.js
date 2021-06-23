@@ -1,7 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 // const path = require('path');
 const chalk = require('chalk');
-const pkg = require('../package.json');
+const pkg = require('../../package.json');
 
 const databaseDirectory = './databases';
 const migrationDirectory = './databases/migrations';

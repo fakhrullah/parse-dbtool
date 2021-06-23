@@ -48,13 +48,6 @@ You can just use it with `npx` command
 npx parse-dbtool --help
 ```
 
-Or you can install it `npm install parse-dbtool` and use it `parse-dbtool` command. 
-
-```
-npm install parse-dbtool
-parse-dbtool -h
-```
-
 ## Setup folders structure so that you can start using `parse-dbtool`
 
 Start using parse-dbtool by initialize folder structure.

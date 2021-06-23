@@ -1,4 +1,4 @@
-const { isStartWithKeywordCreate, isRequiredEnvironmentAvailable } = require('../libs/helpers');
+const { isStartWithKeywordCreate, isRequiredEnvironmentAvailable } = require('../src/libs/helpers');
 
 test('should start with "create"', () => {
   expect(isStartWithKeywordCreate('create-something')).toBe(true);
