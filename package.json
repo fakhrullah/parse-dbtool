@@ -1,16 +1,20 @@
 {
   "name": "parse-dbtool",
   "version": "0.1.7",
-  "main": "parse-dbtool.js",
+  "main": "./src/parse-dbtool.js",
   "scripts": {
     "test": "jest"
   },
-  "keywords": [],
+  "keywords": ["parse-server", "migration", "seeder"],
   "author": "Fakhrullah Padzil",
   "license": "ISC",
   "description": "Command line to create database migration and seeder for ParseServer (ParsePlatform).",
   "bin": {
-    "parse-dbtool": "parse-dbtool.js"
+    "parse-dbtool": "src/parse-dbtool.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fakhrullah/parse-dbtool"
   },
   "dependencies": {
     "chalk": "^4.1.1",

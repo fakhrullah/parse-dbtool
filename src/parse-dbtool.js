@@ -9,7 +9,7 @@ const migrationDown = require('./migration-down');
 const migrationStatus = require('./migration-status');
 const seedRun = require('./seed-run');
 const seedMake = require('./seed-make');
-const pkg = require('./package.json');
+const pkg = require('../package.json');
 
 // eslint-disable-next-line no-unused-expressions
 yargs(hideBin(process.argv))
