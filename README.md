@@ -3,7 +3,7 @@
 
 > For now, we can only use it to run all migration on empty database and undo all migrations.
 
-This is command line tool for Parse Server ([Parse Platform](https://parseplatform.org/)) 
+A command line tool for Parse Server ([Parse Platform](https://parseplatform.org/)) 
 to help you create migrations and seeders for Parse Server.
 
 ## Introduction
@@ -31,14 +31,28 @@ will prevent anyone to add new field.
 Migrations can help all developers on the same page of the database structure.
 Having strict parse-server is also good for maintenance and security.
 
-## Installation
+> Before you continue, I would like to give a warning.
+> 
+> This tool, or any other migration tool like `Laravel > Migration` & `Sequelize-cli migration`
+> will make a change your database structure and also the data.
+> So, **be careful**. Backup your database.
+>
+> For me, I use migrations & seeding on development and testing a lot.
+> But, for production, I will be seriously careful.
 
-```
-npm install parse-dbtool
-```
+## Usage
+
+You can just use it with `npx` command
 
 ```
 npx parse-dbtool --help
+```
+
+Or you can install it `npm install parse-dbtool` and use it `parse-dbtool` command. 
+
+```
+npm install parse-dbtool
+parse-dbtool -h
 ```
 
 ## Setup folders structure so that you can start using `parse-dbtool`
@@ -175,29 +189,106 @@ Once you have write your migration code, you can run it. The `parse-dbtool` will
 npx parse-dbtool migrate
 ```
 
-You can see your migration status:
+The command above will run all available migrations that had not run yet.
+You can see your migrations status using the following command:
 
 ```
 npx parse-dbtool migration:status
 ```
 
+Migration with status `up` means already run, and it is recorded in same databases under `Migration` classname.
+
 ## Undo migration
+
+Cancel your previous migration with `migration:undo` command. The following command will undo last one step of migration.
 
 ```
 npx parse-dbtool migration:undo
 ```
 
+The `migration:undo` accepts how many step back you want to undo. 
+
+```
+npx parse-dbtool migration:undo 3
+npx parse-dbtool migration:undo --step=3
+```
+
+Will revert the last third migrations.
+
+If you want to undo all migrations, just pass step more than migrations you have run.
+
+```
+npx parse-dbtool migration:undo 9999
+```
+
+Will revert the last 9999th migrations. If you have less than 9999 migrations, this will revert all the migrations.
+
 ## Seeder
 
-what is seeder
+You can insert data to your database by using seeder.
+
+For example, our system might default type of pets. Seeder can be used to pre-fill types of pets data.
+
+Seeder can also be use to seed test data.
 
 ## Generating seeder
 
+Create seeder file. 
+
 ```
-npx parse-dbtool seed:make
+npx parse-dbtool seed:make seed_pets
 ```
 
+The command above will create a file named `XXXXXXXXXXXXXX-seed_pets.js` inside `databases/seeder` directory.
+The file will contain example code to seed data.
+
+You should delete the code and write your own seeder.
+
+The `parse-dbtool` is a tool to manage your migrations and seeder file. At the back, `parse-dbtool` will
+use official Parse JS SDK to run your code.
+
+Inside created file, you will find the code is creating Parse.Object and save all.
+
 ## Seeder file structure
+
+```
+npx parse-dbtool seed:make seed_users
+```
+
+This command will create `databases/seeder/XXXXXXXXXXXXXX-seed_users.js`. It will pre-fil with example seeder like below:
+
+```javascript
+/**
+ *
+ * @param {Parse} Parse
+ */
+exports.run = async (Parse) => {
+  /**
+    * Example:
+    *
+    * Seed pets
+    */
+
+  const tom = new Parse.Object('Pet');
+  tom.set('name', 'Tom');
+  tom.set('photoUrl', 'https://placekitten.com/200/300');
+
+  const angela = new Parse.Object('Pet');
+  angela.set('name', 'angela');
+  angela.set('photoUrl', 'https://placekitten.com/300/300');
+
+  const pets = [tom, angela];
+
+  return Parse.Object.saveAll(pets, { useMasterKey: true });
+};
+```
+
+You should delete those code, then wrote your own. The file will contain `run` function that will be run when
+you run `seed` command.
+
+As you can see, the code is how you create `Parse.Object` and save it to parse-server using Parse JS SDK.
+
+Because, `parse-dbtool` is just a runner and management tool for your migrations file and seeder.
 
 ## Running seeder
 
