@@ -1,8 +1,3 @@
-> This is **Work in progress**. We can use it to create migration files and run migration.
-> But migrations is not record in database, so there will be problem to undo migration.
-
-> For now, we can only use it to run all migration on empty database and undo all migrations.
-
 A command line tool for Parse Server ([Parse Platform](https://parseplatform.org/)) 
 to help you create migrations and seeders for Parse Server.
 
@@ -285,9 +280,12 @@ Because, `parse-dbtool` is just a runner and management tool for your migrations
 
 ## Running seeder
 
+The following command will run all seed files.
+
 ```
 npx parse-dbtool seed
 ```
 
 ## Contribution
 
+Always welcome for contribution.
