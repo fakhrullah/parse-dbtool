@@ -5,7 +5,11 @@
   "scripts": {
     "test": "jest"
   },
-  "keywords": ["parse-server", "migration", "seeder"],
+  "keywords": [
+    "parse-server",
+    "migration",
+    "seeder"
+  ],
   "author": "Fakhrullah Padzil",
   "license": "ISC",
   "description": "Command line to create database migration and seeder for ParseServer (ParsePlatform).",
@@ -22,7 +26,6 @@
     "dotenv": "^10.0.0",
     "fast-glob": "^3.2.5",
     "parse": "^3.2.0",
-    "parse-server": "github:parse-community/parse-server#master",
     "ts-dedent": "^2.1.1",
     "yargs": "^17.0.1"
   },
