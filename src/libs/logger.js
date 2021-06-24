@@ -14,6 +14,8 @@ const error = (text) => chalk`{white.bgRed  ERROR } ${text}`;
  */
 const success = (text) => `${chalk.white.bgGreen(' SUCCESS ')} ${text}`;
 
+const info = (text) => `${chalk.white.bgBlue(' INFO ')} ${text}`;
+
 /**
  * @param {string} text
  *
@@ -42,7 +44,7 @@ module.exports = {
   success,
   error,
   // warning,
-  // info,
+  info,
   checked,
   loading,
   up,
