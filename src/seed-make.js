@@ -1,6 +1,7 @@
 const path = require('path');
 const fs = require('fs');
-const { csuccess, cerror, namingFile } = require('./libs/helpers');
+const { namingFile } = require('./libs/helpers');
+const L = require('./libs/logger');
 const { buildInfo, seederDirectory } = require('./libs/system');
 
 const command = 'seed:make [name]';
@@ -37,9 +38,9 @@ const handler = async (args) => {
   fs.writeFileSync(seederFilepath, seederFileTemplate);
 
   if (seederFilepath) {
-    console.log(csuccess(`New migration was created at ${seederFilepath}\n`));
+    console.log(L.success(`New migration was created at ${seederFilepath}\n`));
   } else {
-    console.log(cerror(`Failed to create migration for ${name}`));
+    console.log(L.error(`Failed to create migration for ${name}`));
   }
 };
 

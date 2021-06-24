@@ -2,10 +2,9 @@ const chalk = require('chalk');
 const path = require('path');
 const fastGlob = require('fast-glob');
 const Parse = require('parse/node');
-const {
-  isRequiredEnvironmentAvailable, cloading, cright, cerror, csuccess,
-} = require('./libs/helpers');
+const { isRequiredEnvironmentAvailable } = require('./libs/helpers');
 const { buildInfo, seederDirectory } = require('./libs/system');
+const L = require('./libs/logger');
 
 const {
   APPLICATION_ID, MASTER_KEY, SERVER_URL,
@@ -38,14 +37,14 @@ async function seedRun() {
     const seederScript = require(filepath);
     const filename = path.basename(filepath);
 
-    console.log(cloading(`Seeding ${filename}`));
+    console.log(L.loading(`Seeding ${filename}`));
 
     try {
       // eslint-disable-next-line no-await-in-loop
       await seederScript.run(Parse);
-      console.log(cright(`Done    ${filename}\n`));
+      console.log(L.checked(`Done    ${filename}\n`));
     } catch (error) {
-      console.log(cerror(error.message));
+      console.log(L.error(error.message));
       // Break the loop when error happen
       break;
     }
@@ -62,7 +61,7 @@ const handler = async (args) => {
 
   await seedRun();
 
-  console.log(`\n${csuccess('Successfully run seeders.\n')}`);
+  console.log(`\n${L.success('Successfully run seeders.\n')}`);
 };
 
 module.exports = {

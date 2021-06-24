@@ -1,44 +1,7 @@
 const { format: dateFormat } = require('date-fns');
-const chalk = require('chalk');
 const { default: dedent } = require('ts-dedent');
-
-/**
- * Write error log
- *
- * @param {string} text
- * @returns {string}
- */
-const cerror = (text) => chalk`{white.bgRed  ERROR } ${text}`;
-
-/**
-  * @param {string} text
-  *
-  */
-const csuccess = (text) => `${chalk.white.bgGreen(' SUCCESS ')} ${text}`;
-
-/**
-  * @param {string} text
-  *
-  */
-const cright = (text) => `${chalk.green(' ✓ ')}${text}`;
-
-/**
-  * @param {string} text
-  *
-  */
-const cloading = (text) => `${chalk(' ⠶ ')}${text}`;
-
-/**
-  * @param {string} text
-  *
-  */
-const cup = (text) => `${chalk.whiteBright.bgGreen(' ✓ ')} up   ${text}`;
-
-/**
-  * @param {string} text
-  *
-  */
-const cdown = (text) => `${chalk.whiteBright.bgRed(' ‒ ')} down ${text}`;
+const fs = require('fs');
+const path = require('path');
 
 /**
  *
@@ -69,6 +32,17 @@ const isRequiredEnvironmentAvailable = async (SERVER_URL, APPLICATION_ID, MASTER
   return true;
 };
 
+const isParseDBToolRequiredDirExist = async (dirpath) => fs
+  .existsSync(path.resolve(process.cwd(), dirpath));
+
+const isDatabaseDirExist = async () => isParseDBToolRequiredDirExist('databases/');
+const isMigrationDirExist = async () => isParseDBToolRequiredDirExist('databases/migration/');
+const isSeederDirExist = async () => isParseDBToolRequiredDirExist('databases/seeder/');
+
+const isRequiredDirExist = async () => isDatabaseDirExist
+  && isMigrationDirExist
+  && isSeederDirExist;
+
 /**
  *
  * @param {Date} datetime
@@ -83,13 +57,8 @@ const namingFile = (datetime, name) => {
 };
 
 module.exports = {
-  csuccess,
-  cerror,
-  cright,
-  cloading,
-  cup,
-  cdown,
   isStartWithKeywordCreate,
   isRequiredEnvironmentAvailable,
+  isRequiredDirExist,
   namingFile,
 };

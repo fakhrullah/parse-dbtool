@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { cerror, csuccess } = require('./libs/helpers');
+const L = require('./libs/logger');
 const {
   buildInfo, databaseDirectory, migrationDirectory, seederDirectory,
 } = require('./libs/system');
@@ -23,31 +23,31 @@ exports.handler = (args) => {
   // check databases/ & create if not exist yet
   const databasesDir = path.resolve(databaseDirectory);
   if (fs.existsSync(databasesDir)) {
-    // console.log(cerror('databases/ directory not exist'));
-    console.log(cerror('The `databases/` directory already exist. Failed to initialize.\n'));
+    // console.log(L.error('databases/ directory not exist'));
+    console.log(L.error('The `databases/` directory already exist. Failed to initialize.\n'));
 
     // TODO: How to solve this (--force flag?)
     return;
   }
   fs.mkdirSync(databasesDir);
-  console.log(csuccess(`Successfully created databases folder at ${databasesDir}`));
+  console.log(L.success(`Successfully created databases folder at ${databasesDir}`));
 
   // Check databases/migrations/ dir & create if not exist yet
   const migrationDir = path.resolve(migrationDirectory);
   if (fs.existsSync(migrationDir)) {
-    console.log(cerror(`The migration folder already exist at ${migrationDir}\n`));
+    console.log(L.error(`The migration folder already exist at ${migrationDir}\n`));
   } else {
     fs.mkdirSync(migrationDir);
-    console.log(csuccess(`Successfullt created migrations folder at ${migrationDir}`));
+    console.log(L.success(`Successfullt created migrations folder at ${migrationDir}`));
   }
 
   // Check databases/migrations/ dir & create if not exist yet
   const seederDir = path.resolve(seederDirectory);
   if (fs.existsSync(seederDir)) {
-    console.log(cerror(`The seeders folder already exist at ${seederDir}\n`));
+    console.log(L.error(`The seeders folder already exist at ${seederDir}\n`));
   } else {
     fs.mkdirSync(seederDir);
-    console.log(csuccess(`Successfullt created seeder folder at ${seederDir}`));
+    console.log(L.success(`Successfullt created seeder folder at ${seederDir}`));
   }
   console.log('');
 };

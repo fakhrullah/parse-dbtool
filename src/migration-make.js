@@ -2,7 +2,8 @@ const { format: dateFormat } = require('date-fns');
 const fs = require('fs');
 const path = require('path');
 const { migrationDirectory, buildInfo } = require('./libs/system');
-const { isStartWithKeywordCreate, csuccess, cerror } = require('./libs/helpers');
+const { isStartWithKeywordCreate } = require('./libs/helpers');
+const L = require('./libs/logger');
 
 exports.command = 'migration:make [name]';
 
@@ -62,8 +63,8 @@ exports.handler = (args) => {
   const migrationFilePath = migrationMake(name);
 
   if (migrationFilePath) {
-    console.log(csuccess(`New migration was created at ${migrationFilePath}\n`));
+    console.log(L.success(`New migration was created at ${migrationFilePath}\n`));
   } else {
-    console.log(cerror(`Failed to create migration for ${name}`));
+    console.log(L.error(`Failed to create migration for ${name}`));
   }
 };

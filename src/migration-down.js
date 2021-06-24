@@ -1,9 +1,8 @@
 require('dotenv').config();
 const chalk = require('chalk');
 const Parse = require('parse/node');
-const {
-  isRequiredEnvironmentAvailable, cerror, cloading, cright,
-} = require('./libs/helpers');
+const { isRequiredEnvironmentAvailable } = require('./libs/helpers');
+const L = require('./libs/logger');
 const { getAllMigrations, removeMigrations } = require('./libs/migration-model');
 const { buildInfo } = require('./libs/system');
 
@@ -40,10 +39,11 @@ async function migrationDown(step = 1) {
     SERVER_URL,
     APPLICATION_ID,
     MASTER_KEY,
-  ).catch((err) => console.log(cerror(err.message)));
+  ).catch((err) => console.log(L.error(err.message)));
 
   // Undo migration must be run from newest to oldest
-  const allMigrations = await getAllMigrations(Parse);
+  const allMigrations = await getAllMigrations(Parse)
+    .catch((err) => { throw new Error(err.message); });
 
   const reversedAlreadyRunMigrations = allMigrations
     .filter((migration) => migration.status === 'up')
@@ -56,7 +56,7 @@ async function migrationDown(step = 1) {
     // eslint-disable-next-line import/no-dynamic-require, global-require
     const migrationScript = require(migrationDetail.fullpath);
 
-    console.log(cloading(`Reverting ${migrationDetail.name}`));
+    console.log(L.loading(`Reverting ${migrationDetail.name}`));
 
     // eslint-disable-next-line no-await-in-loop
     const undidMigration = await migrationScript.down(Parse);
@@ -68,7 +68,7 @@ async function migrationDown(step = 1) {
       break;
     }
 
-    console.log(cright(`Reverted  ${migrationDetail.name}\n`));
+    console.log(L.checked(`Reverted  ${migrationDetail.name}\n`));
 
     // Add timeout to safety finish one function before going to next
     // eslint-disable-next-line no-await-in-loop
@@ -87,7 +87,7 @@ exports.handler = async (args) => {
 
   const undidMigrations = await migrationDown(step)
     .catch((err) => {
-      console.log(cerror(err.message));
+      console.log(L.error(err.message));
     });
 
   // Remove ran script from database

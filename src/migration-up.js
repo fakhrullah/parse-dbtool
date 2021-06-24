@@ -6,9 +6,8 @@ const Parse = require('parse/node');
 
 const MigrationError = require('./libs/MigrationError');
 const { buildInfo } = require('./libs/system');
-const {
-  cerror, csuccess, cright, cloading, isRequiredEnvironmentAvailable,
-} = require('./libs/helpers');
+const { isRequiredEnvironmentAvailable } = require('./libs/helpers');
+const L = require('./libs/logger');
 const { getAllMigrations, saveAllMigrations } = require('./libs/migration-model');
 
 const {
@@ -68,15 +67,15 @@ async function migrationUp() {
     const migrationScript = require(migrationToRun.fullpath);
     const migrationFilename = path.basename(migrationToRun.name);
 
-    console.log(cloading(`Migrating ${migrationFilename}`));
+    console.log(L.loading(`Migrating ${migrationFilename}`));
 
     try {
       // eslint-disable-next-line no-await-in-loop
       await migrationScript.up(Parse);
-      console.log(cright(`Migrated  ${migrationFilename}\n`));
+      console.log(L.checked(`Migrated  ${migrationFilename}\n`));
       migrationsDone.push(migrationToRun);
     } catch (error) {
-      console.log(cerror(error.message));
+      console.log(L.error(error.message));
       // Break the loop when error happen
       break;
     }
@@ -108,5 +107,5 @@ exports.handler = async (args) => {
     // Run seeders
   }
 
-  console.log(`\n${csuccess('Successfully run migrations.\n')}`);
+  console.log(`\n${L.success('Successfully run migrations.\n')}`);
 };

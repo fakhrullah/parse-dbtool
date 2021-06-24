@@ -1,5 +1,7 @@
 const FastGlob = require('fast-glob');
 const path = require('path');
+const { isRequiredDirExist } = require('./helpers');
+const L = require('./logger');
 const { migrationDirectory } = require('./system');
 
 /**
@@ -11,6 +13,9 @@ const { migrationDirectory } = require('./system');
 async function getAllRunMigrations(Parse) {
   const migrationQuery = new Parse.Query('Migration');
   const migrations = await migrationQuery.findAll({ useMasterKey: true });
+  if (migrations.length === 0) {
+    throw new Error('No run migrations found. Run migrations data is empty');
+  }
   return migrations.map((migration) => migration.get('name'));
 }
 
@@ -20,6 +25,12 @@ async function getAllRunMigrations(Parse) {
  * @returns {Promise<MigrationDetail[]>}
  */
 exports.getAllMigrations = async (Parse) => {
+  if (await isRequiredDirExist()) {
+    console.log(L.error('Required directory not found.'));
+    console.log('\nSetup directories by running `npx parse-dbtool init`.\n');
+    throw new Error('');
+  }
+
   const migrationFiles = FastGlob.sync(`${path.resolve(process.cwd(), migrationDirectory)}/**`);
   const allRunMigrations = await getAllRunMigrations(Parse);
 
@@ -73,3 +84,7 @@ exports.saveAllMigrations = (Parse, migrations) => {
  * @property {string} name
  * @property {string} fullpath
  */
+
+module.exports = {
+  getAllRunMigrations,
+};
