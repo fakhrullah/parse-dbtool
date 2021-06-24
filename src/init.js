@@ -5,15 +5,7 @@ const {
   buildInfo, databaseDirectory, migrationDirectory, seederDirectory,
 } = require('./libs/system');
 
-exports.command = 'init';
-
-// exports.aliases = 'initiliaze';
-
-exports.describe = 'Initialize directory structures';
-
-// exports.builder = {};
-
-exports.handler = (args) => {
+const initHandler = (args) => {
   console.log(`\n${buildInfo}\n`);
 
   console.log('Initialize parse-server to suport migration and seeds\n');
@@ -38,10 +30,10 @@ exports.handler = (args) => {
     console.log(L.error(`The migration folder already exist at ${migrationDir}\n`));
   } else {
     fs.mkdirSync(migrationDir);
-    console.log(L.success(`Successfullt created migrations folder at ${migrationDir}`));
+    console.log(L.success(`Successfully created migrations folder at ${migrationDir}`));
   }
 
-  // Check databases/migrations/ dir & create if not exist yet
+  // Check databases/seeder/ dir & create if not exist yet
   const seederDir = path.resolve(seederDirectory);
   if (fs.existsSync(seederDir)) {
     console.log(L.error(`The seeders folder already exist at ${seederDir}\n`));
@@ -50,4 +42,12 @@ exports.handler = (args) => {
     console.log(L.success(`Successfullt created seeder folder at ${seederDir}`));
   }
   console.log('');
+};
+
+module.exports = {
+  command: 'init',
+  // aliases: 'initiliaze',
+  describe: 'Initialize directory structures',
+  // builder: {},
+  handler: initHandler,
 };
