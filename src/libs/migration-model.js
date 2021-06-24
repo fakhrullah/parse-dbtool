@@ -13,10 +13,11 @@ const { migrationDirectory } = require('./system');
 async function getAllRunMigrations(Parse) {
   const migrationQuery = new Parse.Query('Migration');
   const migrations = await migrationQuery.findAll({ useMasterKey: true });
-  if (migrations.length === 0) {
-    throw new Error('No run migrations found. Run migrations data is empty');
-  }
   return migrations.map((migration) => migration.get('name'));
+}
+
+function getAllMigrationFiles() {
+  return FastGlob.sync(`${path.resolve(process.cwd(), migrationDirectory)}/**`);
 }
 
 /**
@@ -24,14 +25,14 @@ async function getAllRunMigrations(Parse) {
  * @param {Parse} Parse
  * @returns {Promise<MigrationDetail[]>}
  */
-exports.getAllMigrations = async (Parse) => {
-  if (await isRequiredDirExist()) {
+const getAllMigrations = async (Parse) => {
+  if (!isRequiredDirExist()) {
     console.log(L.error('Required directory not found.'));
     console.log('\nSetup directories by running `npx parse-dbtool init`.\n');
     throw new Error('');
   }
 
-  const migrationFiles = FastGlob.sync(`${path.resolve(process.cwd(), migrationDirectory)}/**`);
+  const migrationFiles = getAllMigrationFiles();
   const allRunMigrations = await getAllRunMigrations(Parse);
 
   return migrationFiles
@@ -48,7 +49,7 @@ exports.getAllMigrations = async (Parse) => {
  * @param {Parse} Parse
  * @param {MigrationDetail[]} migrations
  */
-exports.removeMigrations = async (Parse, migrations) => {
+const removeMigrations = async (Parse, migrations) => {
   const migrationObjects = await Promise.all(migrations.map(async (migration) => {
     const migrationQuery = new Parse.Query('Migration');
     migrationQuery.equalTo('name', migration.name);
@@ -65,7 +66,7 @@ exports.removeMigrations = async (Parse, migrations) => {
  * @param {Parse} Parse
  * @param {MigrationDetail[]} migrations
  */
-exports.saveAllMigrations = (Parse, migrations) => {
+const saveAllMigrations = (Parse, migrations) => {
   const Migration = Parse.Object.extend('Migration');
 
   const migrationsToSave = migrations.map((migration) => {
@@ -87,4 +88,7 @@ exports.saveAllMigrations = (Parse, migrations) => {
 
 module.exports = {
   getAllRunMigrations,
+  getAllMigrations,
+  saveAllMigrations,
+  removeMigrations,
 };

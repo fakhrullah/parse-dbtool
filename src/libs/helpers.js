@@ -32,16 +32,16 @@ const isRequiredEnvironmentAvailable = async (SERVER_URL, APPLICATION_ID, MASTER
   return true;
 };
 
-const isParseDBToolRequiredDirExist = async (dirpath) => fs
+const isParseDBToolRequiredDirExist = (dirpath) => fs
   .existsSync(path.resolve(process.cwd(), dirpath));
 
-const isDatabaseDirExist = async () => isParseDBToolRequiredDirExist('databases/');
-const isMigrationDirExist = async () => isParseDBToolRequiredDirExist('databases/migration/');
-const isSeederDirExist = async () => isParseDBToolRequiredDirExist('databases/seeder/');
+const isDatabaseDirExist = () => isParseDBToolRequiredDirExist('databases/');
+const isMigrationDirExist = () => isParseDBToolRequiredDirExist('databases/migration/');
+const isSeederDirExist = () => isParseDBToolRequiredDirExist('databases/seeder/');
 
-const isRequiredDirExist = async () => isDatabaseDirExist
-  && isMigrationDirExist
-  && isSeederDirExist;
+const isRequiredDirExist = () => isDatabaseDirExist()
+  && isMigrationDirExist()
+  && isSeederDirExist();
 
 /**
  *
