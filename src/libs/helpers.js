@@ -36,8 +36,8 @@ const isParseDBToolRequiredDirExist = (dirpath) => fs
   .existsSync(path.resolve(process.cwd(), dirpath));
 
 const isDatabaseDirExist = () => isParseDBToolRequiredDirExist('databases/');
-const isMigrationDirExist = () => isParseDBToolRequiredDirExist('databases/migration/');
-const isSeederDirExist = () => isParseDBToolRequiredDirExist('databases/seeder/');
+const isMigrationDirExist = () => isParseDBToolRequiredDirExist('databases/migrations/');
+const isSeederDirExist = () => isParseDBToolRequiredDirExist('databases/seeders/');
 
 const isRequiredDirExist = () => isDatabaseDirExist()
   && isMigrationDirExist()
