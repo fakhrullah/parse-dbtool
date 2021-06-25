@@ -10,13 +10,7 @@ const {
   APPLICATION_ID, MASTER_KEY, SERVER_URL,
 } = process.env;
 
-exports.command = 'migration:undo [step]';
-
-// exports.aliases = 'migration:down';
-
-exports.describe = 'Undo previous migrations.';
-
-exports.builder = (args) => args
+const builder = (args) => args
   .option('step', {
     describe: 'How many step back to undo',
     type: 'number',
@@ -34,12 +28,6 @@ exports.builder = (args) => args
 async function migrationDown(step = 1) {
   /** @type {MigrationDetail[]} */
   const undidMigrations = [];
-
-  await isRequiredEnvironmentAvailable(
-    SERVER_URL,
-    APPLICATION_ID,
-    MASTER_KEY,
-  ).catch((err) => console.log(L.error(err.message)));
 
   // Undo migration must be run from newest to oldest
   const allMigrations = await getAllMigrations(Parse)
@@ -78,18 +66,30 @@ async function migrationDown(step = 1) {
   return undidMigrations;
 }
 
-exports.handler = async (args) => {
+const migrationDownHandler = async (args) => {
   console.log(`\n${buildInfo}\n`);
 
   const step = args.step || 1;
 
   console.log(chalk`Undo migration on parse-server at {underline ${SERVER_URL}}\n`);
 
-  const undidMigrations = await migrationDown(step)
-    .catch((err) => {
-      console.log(L.error(err.message));
-    });
+  try {
+    const undidMigrations = await migrationDown(step);
 
-  // Remove ran script from database
-  await removeMigrations(Parse, undidMigrations);
+    // Remove ran script from database
+    await removeMigrations(Parse, undidMigrations);
+  } catch (err) {
+    console.log(L.error(err.message));
+    throw err;
+  }
+
+  console.log(`\n${L.success('Successfully reverted migrations.\n')}`);
+};
+
+module.exports = {
+  command: 'migration:undo [step]',
+  // aliases: 'migration:down',
+  describe: 'Undo previous migrations',
+  builder,
+  handler: migrationDownHandler,
 };
