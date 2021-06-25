@@ -10,14 +10,6 @@ const {
   APPLICATION_ID, MASTER_KEY, SERVER_URL,
 } = process.env;
 
-const command = 'seed';
-
-// const aliases = ['seed:run'];
-
-const describe = 'Seed data';
-
-// const builder = {};
-
 /**
  * Seed data
  */
@@ -65,8 +57,9 @@ const handler = async (args) => {
 };
 
 module.exports = {
-  command,
-  describe,
-  // builder,
+  command: 'seed',
+  describe: 'Seed data',
+  // aliases: ['seed:run'],
+  // builder: {},
   handler,
 };

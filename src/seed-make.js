@@ -4,12 +4,6 @@ const { namingFile } = require('./libs/helpers');
 const L = require('./libs/logger');
 const { buildInfo, seederDirectory } = require('./libs/system');
 
-const command = 'seed:make [name]';
-
-// const aliases = ['seed:run'];
-
-const describe = 'Make seeder file';
-
 const builder = (args) => args
   .option('name', {
     describe: 'Migration name',
@@ -25,8 +19,6 @@ const builder = (args) => args
     ],
   ]);
 
-const createSeederFile = (name) => namingFile(new Date(), name);
-
 const handler = async (args) => {
   const { name } = args;
 
@@ -34,7 +26,10 @@ const handler = async (args) => {
 
   const seederFileTemplate = fs.readFileSync(path.join(__dirname, './templates/template_seeder.js'));
 
-  const seederFilepath = path.resolve(seederDirectory, createSeederFile(name));
+  const seederFilepath = path.resolve(
+    seederDirectory,
+    namingFile(new Date(), name),
+  );
   fs.writeFileSync(seederFilepath, seederFileTemplate);
 
   if (seederFilepath) {
@@ -45,8 +40,9 @@ const handler = async (args) => {
 };
 
 module.exports = {
-  command,
-  describe,
+  command: 'seed:make [name]',
+  // aliases: ['seed:run'],
+  describe: 'Make seeder file',
   builder,
   handler,
 };
