@@ -1,5 +1,7 @@
 const FastGlob = require('fast-glob');
 const path = require('path');
+const { isRequiredDirExist } = require('./helpers');
+const L = require('./logger');
 const { migrationDirectory } = require('./system');
 
 /**
@@ -14,13 +16,23 @@ async function getAllRunMigrations(Parse) {
   return migrations.map((migration) => migration.get('name'));
 }
 
+function getAllMigrationFiles() {
+  return FastGlob.sync(`${path.resolve(process.cwd(), migrationDirectory)}/**`);
+}
+
 /**
  *
  * @param {Parse} Parse
  * @returns {Promise<MigrationDetail[]>}
  */
-exports.getAllMigrations = async (Parse) => {
-  const migrationFiles = FastGlob.sync(`${path.resolve(process.cwd(), migrationDirectory)}/**`);
+const getAllMigrations = async (Parse) => {
+  if (!isRequiredDirExist()) {
+    console.log(L.error('Required directory not found.'));
+    console.log('\nSetup directories by running `npx parse-dbtool init`.\n');
+    throw new Error('');
+  }
+
+  const migrationFiles = getAllMigrationFiles();
   const allRunMigrations = await getAllRunMigrations(Parse);
 
   return migrationFiles
@@ -37,7 +49,7 @@ exports.getAllMigrations = async (Parse) => {
  * @param {Parse} Parse
  * @param {MigrationDetail[]} migrations
  */
-exports.removeMigrations = async (Parse, migrations) => {
+const removeMigrations = async (Parse, migrations) => {
   const migrationObjects = await Promise.all(migrations.map(async (migration) => {
     const migrationQuery = new Parse.Query('Migration');
     migrationQuery.equalTo('name', migration.name);
@@ -54,7 +66,7 @@ exports.removeMigrations = async (Parse, migrations) => {
  * @param {Parse} Parse
  * @param {MigrationDetail[]} migrations
  */
-exports.saveAllMigrations = (Parse, migrations) => {
+const saveAllMigrations = (Parse, migrations) => {
   const Migration = Parse.Object.extend('Migration');
 
   const migrationsToSave = migrations.map((migration) => {
@@ -73,3 +85,10 @@ exports.saveAllMigrations = (Parse, migrations) => {
  * @property {string} name
  * @property {string} fullpath
  */
+
+module.exports = {
+  getAllRunMigrations,
+  getAllMigrations,
+  saveAllMigrations,
+  removeMigrations,
+};

@@ -6,59 +6,44 @@ const Parse = require('parse/node');
 
 const MigrationError = require('./libs/MigrationError');
 const { buildInfo } = require('./libs/system');
-const {
-  cerror, csuccess, cright, cloading, isRequiredEnvironmentAvailable,
-} = require('./libs/helpers');
+const L = require('./libs/logger');
 const { getAllMigrations, saveAllMigrations } = require('./libs/migration-model');
 
 const {
   APPLICATION_ID, JAVASCRIPT_KEY, MASTER_KEY, SERVER_URL,
 } = process.env;
 
+Parse.initialize(APPLICATION_ID, JAVASCRIPT_KEY, MASTER_KEY);
+Parse.serverURL = SERVER_URL;
+
 /**
  * @typedef {import('./libs/migration-model').MigrationDetail} MigrationDetail}
  */
 
-exports.command = 'migrate';
-
-// exports.aliases = ['migration:up', 'migration:run'];
-
-exports.describe = 'Run migrations.';
-
-// exports.builder = (args) => args
+// const builder = (args) => args
 //   .option('seed', {
 //     describe: 'Also run seed.',
 //     type: 'boolean',
 //     example: '',
 //   });
 
-Parse.initialize(APPLICATION_ID, JAVASCRIPT_KEY, MASTER_KEY);
-Parse.serverURL = SERVER_URL;
-
 /**
  *
  * @returns {Promise<MigrationDetail[]>}
  */
 async function migrationUp() {
-  // Check required environment and stop function when not environment is not enough
-  const checkToConnectToParseServer = await isRequiredEnvironmentAvailable(
-    SERVER_URL,
-    APPLICATION_ID,
-    MASTER_KEY,
-  );
-  if (!checkToConnectToParseServer) {
-    throw checkToConnectToParseServer;
-  }
-
   /** @type {MigrationDetail[]} */
   const migrationsDone = [];
 
   /** @type {MigrationDetail[]} */
   const migrationsToRun = await getAllMigrations(Parse)
-    .then((migrations) => migrations.filter((migration) => migration.status === 'down'));
+    .then((migrations) => migrations.filter((migration) => migration.status === 'down'))
+    .catch((err) => { throw err; });
 
   if (migrationsToRun.length === 0) {
-    throw new MigrationError('No migrations were executed, database schema was already up to date.');
+    const message = 'No migrations were executed, database schema was already up to date.';
+    L.info(message);
+    throw new MigrationError(message);
   }
 
   // run up() of all files
@@ -68,15 +53,15 @@ async function migrationUp() {
     const migrationScript = require(migrationToRun.fullpath);
     const migrationFilename = path.basename(migrationToRun.name);
 
-    console.log(cloading(`Migrating ${migrationFilename}`));
+    console.log(L.loading(`Migrating ${migrationFilename}`));
 
     try {
       // eslint-disable-next-line no-await-in-loop
       await migrationScript.up(Parse);
-      console.log(cright(`Migrated  ${migrationFilename}\n`));
+      console.log(L.checked(`Migrated  ${migrationFilename}\n`));
       migrationsDone.push(migrationToRun);
     } catch (error) {
-      console.log(cerror(error.message));
+      console.log(L.error(error.message));
       // Break the loop when error happen
       break;
     }
@@ -89,7 +74,7 @@ async function migrationUp() {
   return migrationsDone;
 }
 
-exports.handler = async (args) => {
+const migrationUpHandler = async (args) => {
   /** @type {boolean} */
   const shouldRunSeed = args.seed || false;
 
@@ -108,5 +93,13 @@ exports.handler = async (args) => {
     // Run seeders
   }
 
-  console.log(`\n${csuccess('Successfully run migrations.\n')}`);
+  console.log(`\n${L.success('Successfully run migrations.\n')}`);
+};
+
+module.exports = {
+  command: 'migrate',
+  // aliases: ['migration:up', 'migration:run'],
+  describe: 'Run migrations',
+  // builder,
+  handler: migrationUpHandler,
 };

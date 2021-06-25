@@ -1,9 +1,8 @@
 require('dotenv').config();
 const chalk = require('chalk');
 const Parse = require('parse/node');
-const {
-  isRequiredEnvironmentAvailable, cerror, cloading, cright,
-} = require('./libs/helpers');
+const { isRequiredEnvironmentAvailable } = require('./libs/helpers');
+const L = require('./libs/logger');
 const { getAllMigrations, removeMigrations } = require('./libs/migration-model');
 const { buildInfo } = require('./libs/system');
 
@@ -11,13 +10,7 @@ const {
   APPLICATION_ID, MASTER_KEY, SERVER_URL,
 } = process.env;
 
-exports.command = 'migration:undo [step]';
-
-// exports.aliases = 'migration:down';
-
-exports.describe = 'Undo previous migrations.';
-
-exports.builder = (args) => args
+const builder = (args) => args
   .option('step', {
     describe: 'How many step back to undo',
     type: 'number',
@@ -36,14 +29,9 @@ async function migrationDown(step = 1) {
   /** @type {MigrationDetail[]} */
   const undidMigrations = [];
 
-  await isRequiredEnvironmentAvailable(
-    SERVER_URL,
-    APPLICATION_ID,
-    MASTER_KEY,
-  ).catch((err) => console.log(cerror(err.message)));
-
   // Undo migration must be run from newest to oldest
-  const allMigrations = await getAllMigrations(Parse);
+  const allMigrations = await getAllMigrations(Parse)
+    .catch((err) => { throw new Error(err.message); });
 
   const reversedAlreadyRunMigrations = allMigrations
     .filter((migration) => migration.status === 'up')
@@ -56,7 +44,7 @@ async function migrationDown(step = 1) {
     // eslint-disable-next-line import/no-dynamic-require, global-require
     const migrationScript = require(migrationDetail.fullpath);
 
-    console.log(cloading(`Reverting ${migrationDetail.name}`));
+    console.log(L.loading(`Reverting ${migrationDetail.name}`));
 
     // eslint-disable-next-line no-await-in-loop
     const undidMigration = await migrationScript.down(Parse);
@@ -68,7 +56,7 @@ async function migrationDown(step = 1) {
       break;
     }
 
-    console.log(cright(`Reverted  ${migrationDetail.name}\n`));
+    console.log(L.checked(`Reverted  ${migrationDetail.name}\n`));
 
     // Add timeout to safety finish one function before going to next
     // eslint-disable-next-line no-await-in-loop
@@ -78,18 +66,30 @@ async function migrationDown(step = 1) {
   return undidMigrations;
 }
 
-exports.handler = async (args) => {
+const migrationDownHandler = async (args) => {
   console.log(`\n${buildInfo}\n`);
 
   const step = args.step || 1;
 
   console.log(chalk`Undo migration on parse-server at {underline ${SERVER_URL}}\n`);
 
-  const undidMigrations = await migrationDown(step)
-    .catch((err) => {
-      console.log(cerror(err.message));
-    });
+  try {
+    const undidMigrations = await migrationDown(step);
 
-  // Remove ran script from database
-  await removeMigrations(Parse, undidMigrations);
+    // Remove ran script from database
+    await removeMigrations(Parse, undidMigrations);
+  } catch (err) {
+    console.log(L.error(err.message));
+    throw err;
+  }
+
+  console.log(`\n${L.success('Successfully reverted migrations.\n')}`);
+};
+
+module.exports = {
+  command: 'migration:undo [step]',
+  // aliases: 'migration:down',
+  describe: 'Undo previous migrations',
+  builder,
+  handler: migrationDownHandler,
 };

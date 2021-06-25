@@ -1,13 +1,8 @@
 const path = require('path');
 const fs = require('fs');
-const { csuccess, cerror, namingFile } = require('./libs/helpers');
+const { namingFile } = require('./libs/helpers');
+const L = require('./libs/logger');
 const { buildInfo, seederDirectory } = require('./libs/system');
-
-const command = 'seed:make [name]';
-
-// const aliases = ['seed:run'];
-
-const describe = 'Make seeder file';
 
 const builder = (args) => args
   .option('name', {
@@ -24,8 +19,6 @@ const builder = (args) => args
     ],
   ]);
 
-const createSeederFile = (name) => namingFile(new Date(), name);
-
 const handler = async (args) => {
   const { name } = args;
 
@@ -33,19 +26,23 @@ const handler = async (args) => {
 
   const seederFileTemplate = fs.readFileSync(path.join(__dirname, './templates/template_seeder.js'));
 
-  const seederFilepath = path.resolve(seederDirectory, createSeederFile(name));
+  const seederFilepath = path.resolve(
+    seederDirectory,
+    namingFile(new Date(), name),
+  );
   fs.writeFileSync(seederFilepath, seederFileTemplate);
 
   if (seederFilepath) {
-    console.log(csuccess(`New migration was created at ${seederFilepath}\n`));
+    console.log(L.success(`New migration was created at ${seederFilepath}\n`));
   } else {
-    console.log(cerror(`Failed to create migration for ${name}`));
+    console.log(L.error(`Failed to create migration for ${name}`));
   }
 };
 
 module.exports = {
-  command,
-  describe,
+  command: 'seed:make [name]',
+  // aliases: ['seed:run'],
+  describe: 'Make seeder file',
   builder,
   handler,
 };
