@@ -9,24 +9,23 @@ const {
   APPLICATION_ID, JAVASCRIPT_KEY, MASTER_KEY, SERVER_URL,
 } = process.env;
 
-exports.command = 'migration:status';
+Parse.initialize(APPLICATION_ID, JAVASCRIPT_KEY, MASTER_KEY);
+Parse.serverURL = SERVER_URL;
 
-// exports.aliases = 'migration:show';
-
-exports.describe = 'Show list migrations and it status';
-
-exports.builder = (args) => args
+/**
+ *
+ * @param {import('yargs').Argv} args
+ * @returns
+ */
+const builder = (args) => args
   .example([
     [
       '$0 migration:status',
     ],
   ]);
 
-Parse.initialize(APPLICATION_ID, JAVASCRIPT_KEY, MASTER_KEY);
-Parse.serverURL = SERVER_URL;
-
 // eslint-disable-next-line no-unused-vars
-exports.handler = async (args) => {
+const migrationStatusHandler = async (args) => {
   console.log(`\n${buildInfo}\n`);
 
   await isRequiredEnvironmentAvailable(
@@ -45,4 +44,12 @@ exports.handler = async (args) => {
 
   // Add spacing
   console.log('');
+};
+
+module.exports = {
+  command: 'migration:status',
+  // aliases: 'migration:show',
+  describe: 'Show list migrations and it status',
+  builder,
+  handler: migrationStatusHandler,
 };
