@@ -1,17 +1,10 @@
-const { format: dateFormat } = require('date-fns');
 const fs = require('fs');
 const path = require('path');
 const { migrationDirectory, buildInfo } = require('./libs/system');
-const { isStartWithKeywordCreate } = require('./libs/helpers');
+const { isStartWithKeywordCreate, isRequiredDirExist, namingFile } = require('./libs/helpers');
 const L = require('./libs/logger');
 
-exports.command = 'migration:make [name]';
-
-// exports.aliases = ['migration:generate [name]', 'migration:create [name]'];
-
-exports.describe = 'Create migration file.';
-
-exports.builder = (args) => args
+const builder = (args) => args
   .option('name', {
     describe: 'Migration name',
     type: 'string',
@@ -38,9 +31,7 @@ exports.builder = (args) => args
 */
 function migrationMake(name) {
   const now = new Date();
-  const datetime = dateFormat(now, 'yyyyMMddHHmmss');
-  const formattedName = name.trim().toLocaleLowerCase().replace(/[^a-zA-Z0-9]/gi, '_');
-  const filename = `${datetime}-${formattedName}`;
+  const filename = namingFile(now, name);
 
   const templateFile = (isStartWithKeywordCreate(name))
     ? fs.readFileSync(path.join(__dirname, './templates/template_create-schema.js'))
@@ -55,10 +46,17 @@ function migrationMake(name) {
   return migrationFilePath;
 }
 
-exports.handler = (args) => {
+const migrationMakeHandler = async (args) => {
   const { name } = args;
 
   console.log(`\n${buildInfo}\n`);
+
+  if (!isRequiredDirExist()) {
+    console.log(L.error('Required directory not found.'));
+    console.log('\nSetup directories by running `npx parse-dbtool init`.\n');
+    throw new Error('Required directory not found.');
+    // return;
+  }
 
   const migrationFilePath = migrationMake(name);
 
@@ -67,4 +65,12 @@ exports.handler = (args) => {
   } else {
     console.log(L.error(`Failed to create migration for ${name}`));
   }
+};
+
+module.exports = {
+  command: 'migration:make [name]',
+  // aliases: ['migration:generate [name]', 'migration:create [name]'],
+  describe: 'Create migration file.',
+  builder,
+  handler: migrationMakeHandler,
 };
