@@ -34,5 +34,5 @@ test('should throw error when migrations is empty', async () => {
 
   mockFindAll.mockReturnValue(Promise.resolve(migrations));
 
-  await expect(getAllRunMigrations(Parse)).rejects.toThrow(/empty/);
+  await expect(getAllRunMigrations(Parse)).resolves.toHaveLength(0);
 });
