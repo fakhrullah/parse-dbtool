@@ -1,13 +1,10 @@
 const chalk = require('chalk');
 const Parse = require('parse/node');
-const { isRequiredEnvironmentAvailable } = require('./libs/helpers');
 const L = require('./libs/logger');
 const { getAllMigrations, removeMigrations } = require('./libs/migration-model');
 const { buildInfo } = require('./libs/system');
 
-const {
-  APPLICATION_ID, MASTER_KEY, SERVER_URL,
-} = process.env;
+const { SERVER_URL } = process.env;
 
 const builder = (args) => args
   .option('step', {
