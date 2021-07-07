@@ -52,7 +52,7 @@ const isRequiredDirExist = () => isDatabaseDirExist()
 const namingFile = (datetime, name) => {
   const formattedDatetime = dateFormat(datetime, 'yyyyMMddHHmmss');
   const formattedName = name.trim().toLocaleLowerCase().replace(/[^a-zA-Z0-9]/gi, '_');
-  const filename = `${formattedDatetime}-${formattedName}.js`;
+  const filename = `${formattedDatetime}-${formattedName}`;
   return filename;
 };
 

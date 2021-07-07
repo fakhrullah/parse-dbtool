@@ -28,7 +28,7 @@ const handler = async (args) => {
 
   const seederFilepath = path.resolve(
     seederDirectory,
-    namingFile(new Date(), name),
+    `${namingFile(new Date(), name)}.js`,
   );
   fs.writeFileSync(seederFilepath, seederFileTemplate);
 
