@@ -1,4 +1,3 @@
-require('dotenv').config();
 const chalk = require('chalk');
 const Parse = require('parse/node');
 const { isRequiredEnvironmentAvailable } = require('./libs/helpers');
