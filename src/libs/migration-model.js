@@ -1,8 +1,26 @@
 const FastGlob = require('fast-glob');
 const path = require('path');
+const ParseInstance = require('parse/node');
 const { isRequiredDirExist } = require('./helpers');
 const L = require('./logger');
 const { migrationDirectory } = require('./system');
+
+const {
+  APPLICATION_ID, JAVASCRIPT_KEY, MASTER_KEY, SERVER_URL,
+} = process.env;
+
+ParseInstance.initialize(APPLICATION_ID, JAVASCRIPT_KEY, MASTER_KEY);
+ParseInstance.serverURL = SERVER_URL;
+
+/**
+ *
+ * @returns {Promise<any>}
+ */
+const initMigrationSchema = async () => {
+  const schema = new ParseInstance.Schema('Migration');
+  schema.addString('name');
+  return schema.save();
+};
 
 /**
  * Get all migrations that already run (stored in database)
@@ -87,6 +105,7 @@ const saveAllMigrations = (Parse, migrations) => {
  */
 
 module.exports = {
+  initMigrationSchema,
   getAllRunMigrations,
   getAllMigrations,
   saveAllMigrations,

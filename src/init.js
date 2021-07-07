@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const L = require('./libs/logger');
+const { initMigrationSchema } = require('./libs/migration-model');
 const {
   buildInfo, databaseDirectory, migrationDirectory, seederDirectory,
 } = require('./libs/system');
@@ -41,6 +42,10 @@ const initHandler = (args) => {
     fs.mkdirSync(seederDir);
     console.log(L.success(`Successfullt created seeder folder at ${seederDir}`));
   }
+
+  // Initialize Migration schema
+  initMigrationSchema().catch((err) => console.log(err));
+
   console.log('');
 };
 
