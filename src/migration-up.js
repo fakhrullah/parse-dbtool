@@ -1,4 +1,3 @@
-require('dotenv').config();
 const path = require('path');
 const chalk = require('chalk');
 // eslint-disable-next-line import/no-extraneous-dependencies

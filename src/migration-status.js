@@ -1,4 +1,3 @@
-require('dotenv').config();
 const Parse = require('parse/node');
 const L = require('./libs/logger');
 const { isRequiredEnvironmentAvailable } = require('./libs/helpers');

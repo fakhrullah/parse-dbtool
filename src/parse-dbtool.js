@@ -1,5 +1,8 @@
 #!/usr/bin/env node
-
+const path = require('path');
+require('dotenv').config({
+  path: path.resolve(process.cwd(), process.env.ENV_FILE || '.env'),
+});
 const yargs = require('yargs/yargs');
 const { hideBin } = require('yargs/helpers');
 const init = require('./init');

@@ -83,6 +83,12 @@ npx parse-dbtool migrate
 
 Doesn't it look cleaner, compared to before. All the enviroment is stored in `.env` file.
 
+You can also specified custom `.env.*` file. The following command will read `.env.test` instead of default `.env`.
+
+```
+ENV_FILE='.env.test' npx parse-dbtool migrate
+```
+
 ## Generating migrations
 
 All your migration files will be stored inside in `databases/migrations/` directory.
