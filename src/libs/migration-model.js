@@ -1,23 +1,16 @@
 const FastGlob = require('fast-glob');
 const path = require('path');
-const ParseInstance = require('parse/node');
 const { isRequiredDirExist } = require('./helpers');
 const L = require('./logger');
 const { migrationDirectory } = require('./system');
 
-const {
-  APPLICATION_ID, JAVASCRIPT_KEY, MASTER_KEY, SERVER_URL,
-} = process.env;
-
-ParseInstance.initialize(APPLICATION_ID, JAVASCRIPT_KEY, MASTER_KEY);
-ParseInstance.serverURL = SERVER_URL;
-
 /**
+ * @param {Parse} Parse
  *
  * @returns {Promise<any>}
  */
-const initMigrationSchema = async () => {
-  const schema = new ParseInstance.Schema('Migration');
+const initMigrationSchema = async (Parse) => {
+  const schema = new Parse.Schema('Migration');
   schema.addString('name');
   return schema.save();
 };
