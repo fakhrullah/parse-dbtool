@@ -12,6 +12,18 @@ const { migrationDirectory } = require('./system');
 const initMigrationSchema = async (Parse) => {
   const schema = new Parse.Schema('Migration');
   schema.addString('name');
+
+  /** @type {Parse.Schema.CLP} */
+  const masterKeyOnlyCLP = {
+    find: { },
+    create: { },
+    get: { },
+    update: { },
+    delete: { },
+    count: { },
+    addField: {},
+  };
+  schema.setCLP(masterKeyOnlyCLP);
   return schema.save();
 };
 
@@ -81,8 +93,16 @@ const saveAllMigrations = (Parse, migrations) => {
   const Migration = Parse.Object.extend('Migration');
 
   const migrationsToSave = migrations.map((migration) => {
+    /** @type {Parse.Object} */
     const migrationObject = new Migration();
     migrationObject.set('name', migration.name);
+
+    const masterKeyOnlyACL = new Parse.ACL();
+    masterKeyOnlyACL.setPublicReadAccess(false);
+    masterKeyOnlyACL.setPublicReadAccess(false);
+
+    migrationObject.setACL(masterKeyOnlyACL);
+
     return migrationObject;
   });
 
