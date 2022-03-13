@@ -1,24 +1,29 @@
 const FastGlob = require('fast-glob');
 const path = require('path');
-const ParseInstance = require('parse/node');
 const { isRequiredDirExist } = require('./helpers');
 const L = require('./logger');
 const { migrationDirectory } = require('./system');
 
-const {
-  APPLICATION_ID, JAVASCRIPT_KEY, MASTER_KEY, SERVER_URL,
-} = process.env;
-
-ParseInstance.initialize(APPLICATION_ID, JAVASCRIPT_KEY, MASTER_KEY);
-ParseInstance.serverURL = SERVER_URL;
-
 /**
+ * @param {Parse} Parse
  *
  * @returns {Promise<any>}
  */
-const initMigrationSchema = async () => {
-  const schema = new ParseInstance.Schema('Migration');
+const initMigrationSchema = async (Parse) => {
+  const schema = new Parse.Schema('Migration');
   schema.addString('name');
+
+  /** @type {Parse.Schema.CLP} */
+  const masterKeyOnlyCLP = {
+    find: { },
+    create: { },
+    get: { },
+    update: { },
+    delete: { },
+    count: { },
+    addField: {},
+  };
+  schema.setCLP(masterKeyOnlyCLP);
   return schema.save();
 };
 
@@ -88,8 +93,16 @@ const saveAllMigrations = (Parse, migrations) => {
   const Migration = Parse.Object.extend('Migration');
 
   const migrationsToSave = migrations.map((migration) => {
+    /** @type {Parse.Object} */
     const migrationObject = new Migration();
     migrationObject.set('name', migration.name);
+
+    const masterKeyOnlyACL = new Parse.ACL();
+    masterKeyOnlyACL.setPublicReadAccess(false);
+    masterKeyOnlyACL.setPublicReadAccess(false);
+
+    migrationObject.setACL(masterKeyOnlyACL);
+
     return migrationObject;
   });
 
