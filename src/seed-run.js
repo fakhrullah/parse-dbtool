@@ -15,7 +15,9 @@ const {
  */
 async function seedRun() {
   await isRequiredEnvironmentAvailable(SERVER_URL, APPLICATION_ID, MASTER_KEY);
-  const seederFiles = fastGlob.sync(`${path.resolve(process.cwd(), seederDirectory)}/*.js`);
+  const seederFiles = fastGlob
+    .sync(`${seederDirectory}/*.js`, { cwd: process.cwd() })
+    .map((file) => path.resolve(process.cwd(), file));
 
   const sortedFiles = seederFiles.sort(
     (a, b) => a.toLowerCase().localeCompare(b.toLocaleLowerCase()),
