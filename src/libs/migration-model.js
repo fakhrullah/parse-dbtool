@@ -39,8 +39,15 @@ async function getAllRunMigrations(Parse) {
   return migrations.map((migration) => migration.get('name'));
 }
 
+/**
+ * Get all files from migration directory
+ *
+ * @returns {string[]} Full path to the files
+ */
 function getAllMigrationFiles() {
-  return FastGlob.sync(`${path.resolve(process.cwd(), migrationDirectory)}/**`);
+  return FastGlob
+    .sync(`${migrationDirectory}/**`, { cwd: process.cwd() })
+    .map((file) => path.resolve(process.cwd(), file));
 }
 
 /**
