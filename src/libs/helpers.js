@@ -56,9 +56,17 @@ const namingFile = (datetime, name) => {
   return filename;
 };
 
+/**
+ *
+ * @param {string} url
+ * @returns {string}
+ */
+const convertToLinuxUrl = (url) => url.replace(/\\/g, '/');
+
 module.exports = {
   isStartWithKeywordCreate,
   isRequiredEnvironmentAvailable,
   isRequiredDirExist,
   namingFile,
+  convertToLinuxUrl,
 };

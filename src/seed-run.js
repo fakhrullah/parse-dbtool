@@ -2,7 +2,7 @@ const chalk = require('chalk');
 const path = require('path');
 const fastGlob = require('fast-glob');
 const Parse = require('parse/node');
-const { isRequiredEnvironmentAvailable } = require('./libs/helpers');
+const { isRequiredEnvironmentAvailable, convertToLinuxUrl } = require('./libs/helpers');
 const { buildInfo, seederDirectory } = require('./libs/system');
 const L = require('./libs/logger');
 
@@ -16,8 +16,11 @@ const {
 async function seedRun() {
   await isRequiredEnvironmentAvailable(SERVER_URL, APPLICATION_ID, MASTER_KEY);
   const seederFiles = fastGlob
-    .sync(`${seederDirectory}/*.js`, { cwd: process.cwd() })
-    .map((file) => path.resolve(process.cwd(), file));
+    .sync(
+      convertToLinuxUrl(
+        path.resolve(process.cwd(), `${seederDirectory}/**`),
+      ),
+    );
 
   const sortedFiles = seederFiles.sort(
     (a, b) => a.toLowerCase().localeCompare(b.toLocaleLowerCase()),
