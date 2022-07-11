@@ -1,6 +1,6 @@
 {
   "name": "parse-dbtool",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "main": "./src/parse-dbtool.js",
   "scripts": {
     "test": "jest"
