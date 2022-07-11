@@ -1,6 +1,6 @@
 const FastGlob = require('fast-glob');
 const path = require('path');
-const { isRequiredDirExist } = require('./helpers');
+const { isRequiredDirExist, convertToLinuxUrl } = require('./helpers');
 const L = require('./logger');
 const { migrationDirectory } = require('./system');
 
@@ -15,12 +15,12 @@ const initMigrationSchema = async (Parse) => {
 
   /** @type {Parse.Schema.CLP} */
   const masterKeyOnlyCLP = {
-    find: { },
-    create: { },
-    get: { },
-    update: { },
-    delete: { },
-    count: { },
+    find: {},
+    create: {},
+    get: {},
+    update: {},
+    delete: {},
+    count: {},
     addField: {},
   };
   schema.setCLP(masterKeyOnlyCLP);
@@ -39,8 +39,18 @@ async function getAllRunMigrations(Parse) {
   return migrations.map((migration) => migration.get('name'));
 }
 
+/**
+ * Get all files from migration directory
+ *
+ * @returns {string[]} Full path to the files
+ */
 function getAllMigrationFiles() {
-  return FastGlob.sync(`${path.resolve(process.cwd(), migrationDirectory)}/**`);
+  return FastGlob
+    .sync(
+      convertToLinuxUrl(
+        path.resolve(process.cwd(), `${migrationDirectory}/**`),
+      ),
+    );
 }
 
 /**
