@@ -18,7 +18,8 @@ jobs:
           node-version: 14
           registry-url: https://registry.npmjs.org/
       - run: npm i
-      - run: npm run build
+      # Do not build for now as babel is not implemented yet
+      # - run: npm run build
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_AUTOMATION_TOKEN}}
