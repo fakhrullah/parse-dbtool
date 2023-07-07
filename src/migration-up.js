@@ -41,8 +41,7 @@ async function migrationUp() {
 
   if (migrationsToRun.length === 0) {
     const message = 'No migrations were executed, database schema was already up to date.';
-    L.info(message);
-    throw new MigrationError(message);
+    console.log(L.info(message));
   }
 
   // run up() of all files
