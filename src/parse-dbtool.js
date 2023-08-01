@@ -27,6 +27,7 @@ yargs(hideBin(process.argv))
   .demandCommand(1)
   .strict()
   // Show help when failed and when no command
+  .completion()
   .showHelpOnFail(true)
   .version(pkg.version)
   .help('h')
