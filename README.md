@@ -175,6 +175,14 @@ stay in your database.
 
 > **You are responsible to write the `down` function that correctly revert written `up` function**
 
+### Migration file name extension
+
+Since version 1.0.8, `parse-dbtool` will automatically read your project `package.json` file.
+When you are using `type: "module"`, it will automatically make migration/seeder file with `.cjs` extension.
+Because `parse-dbtool` not using ESM module, you will need to set `.cjs` extension when developing on ESM project.
+
+But, you can always override this behaviour, by using environment `PDBT_FILE_EXT`. For example, `PDBT_FILE_EXT='.js'`
+
 ## Running migration
 
 Once you have write your migration code, you can run it. The `parse-dbtool` will run all your outstanding migrations.

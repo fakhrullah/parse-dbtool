@@ -4,6 +4,34 @@ const { migrationDirectory, buildInfo } = require('./libs/system');
 const { isStartWithKeywordCreate, isRequiredDirExist, namingFile } = require('./libs/helpers');
 const L = require('./libs/logger');
 
+const { PDBT_FILE_EXT } = process.env;
+
+/**
+ * Get file extension for migration and seeder file.
+ *
+ * Priority:
+ * 1. environment: PDBT_FILE_EXT
+ * 2. automatically check user package.json file.
+ *    This will only work if user run `parse-dbtool` on their root project)
+ * 3. default to '.js'
+ *
+ * @returns {string}
+ */
+function getFileExt() {
+  if (PDBT_FILE_EXT) return PDBT_FILE_EXT;
+
+  // Automatically assign '.cjs' if user using type:module in package.json
+  const userDirPackageJson = path.resolve('./package.json');
+  if (fs.existsSync(userDirPackageJson)) {
+    const packageJsonFile = fs.readFileSync(userDirPackageJson);
+    const pkg = JSON.parse(packageJsonFile.toString());
+
+    if (pkg.type === 'module') return '.cjs';
+  }
+
+  return '.js';
+}
+
 const builder = (args) => args
   .option('name', {
     describe: 'Migration name',
@@ -39,8 +67,7 @@ function migrationMake(name) {
 
   // TODO: Check if file already exists. Because of the timestamp is inserted infront of filename
   // Same name should never exist. But, just for protection.
-
-  const migrationFilePath = path.join(migrationDirectory, `/${filename}.js`);
+  const migrationFilePath = path.join(migrationDirectory, `/${filename}${getFileExt()}`);
   fs.writeFileSync(migrationFilePath, templateFile);
 
   return migrationFilePath;
