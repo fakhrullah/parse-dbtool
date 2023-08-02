@@ -300,6 +300,52 @@ The following command will run all seed files.
 npx parse-dbtool seed
 ```
 
+## Helper command
+
+Run `parse-dbtool helper --help` for more detail.
+
+### Get current schema from server.
+
+**Use case.** When you want to create migration and change Parse.Classname Class Level Permission (CLP),
+you will need to see the current CLP. So that, in migration down, you can revert it back to current status.
+
+```bash
+$ parse-dbtool helper getSchema _User
+
+# Will print detail as below
+
+# Parse DBTool v1.1.0 - Parse server tool for data migration and seeding.
+#
+# {
+#   className: '_User',
+#   fields: {
+#     objectId: { type: 'String' },
+#     createdAt: { type: 'Date' },
+#     updatedAt: { type: 'Date' },
+#     ACL: { type: 'ACL' },
+#     username: { type: 'String' },
+#     password: { type: 'String' },
+#     email: { type: 'String' },
+#     emailVerified: { type: 'Boolean' },
+#     authData: { type: 'Object' }
+#   },
+#   classLevelPermissions: {
+#     find: { '*': true },
+#     get: { '*': true },
+#     create: { '*': true },
+#     update: { '*': true },
+#     delete: { '*': true },
+#     addField: { '*': true }
+#   },
+#   indexes: {
+#     _id_: { _id: 1 },
+#     username_1: { username: 1 },
+#     email_1: { email: 1 }
+#   }
+# }
+
+```
+
 ## Contribution
 
 Always welcome for contribution.
